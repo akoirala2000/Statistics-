@@ -33,7 +33,9 @@ where:
 - P(X=x) = Probability that random variable has value of x.   
 
 
-If all values of random variable are equally likely, than P(X=x) is equal to 1/N and the Equation 4 becomes Equation 1.
+If all values of random variable are equally likely, than P(X=x) is equal to 1/N and since 1/N is constant can be moved outside summation which makes the Equation 4 equal to  Equation 1. More in binomial distribution.  
+
+Variance is the measure of dispersion and measured as diver
 
 
 
