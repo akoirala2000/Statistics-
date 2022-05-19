@@ -1,0 +1,204 @@
+---
+title: "Principles of Inference"
+author: "Amrit Koirala"
+date: "5/3/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Basic concept  
+It is very important to understand the measure of central tendency, mean and measure of dispersion, variance in inference.General formula for mean is: 
+\begin{equation} 
+Mean (\mu) = \frac{\sum X}{N} 
+\end{equation} 
+When frequency table is given mean is: 
+\begin{equation}
+Mean (\mu) = \frac{\sum fX}{N} 
+\end{equation}
+When relative frequency (empirical probability / proportion) is given, mean is given by: 
+\begin{equation}
+Mean (\mu) = \sum ( X\times p) 
+\end{equation}
+where p is the proportion of particular random variable X. 
+
+In probability, the expected value of a random variable, E[x] is similar to mean of that random variable. And is given as: 
+\begin{equation}
+E[X] = \sum x \times P(X=x)
+\end{equation}
+where:  
+
+- E[X] = Expectation of random variable X
+- P(X=x) = Probability that random variable has value of x.   
+
+
+If all values of random variable are equally likely, than P(X=x) is equal to 1/N and the Equation 4 becomes Equation 1.
+
+
+
+## Concept 
+
+To understand the idea of inference it is necessary to understand the terms "Population" and "Sample". *Population is a data set representing all the entity of interest.* For example: If we are interested to study distribution of facebook users by country then, all 2.912 billion facebook users (facebook data 2022) constitute the population. At the same time if we are interested in distribution of facebook users in USA by state, then the facebook users in USA (307.34 million) constitute the population. Similarly, if we are interested in effect of age on hypertension in human being, then every single human being in world (7.9 billion, 2022) constitute our population. In situation where we are interested in small population like comparing the performance of two high school senior students only, we can make measurement on all students and compare the mean performance score in each school while taking variance of score in consideration.  
+    In many real life scenario we cannot make measurement on every single individual in the population so, we need to do sampling from the population. *sample is a subset of population and is unbiased representation of the population.* It is very important for sample to be a representative of population because ultimately measurements made on sample will be used to infer the population parameter. 
+
+
+### Example 1
+```{r}
+
+###This might me actually more relevant while discussing the intro to hypothesis testing. 
+#Case I 
+set.seed(345)
+par(mfrow=c(1,3))
+SilverLand_HS <- rnorm(40, 76, 10)
+Orange_HS <- rnorm(35, 80, 10)
+Group <- c(rep("SL_HS",40), rep("Org_HS", 35))
+boxplot(c(SilverLand_HS,Orange_HS)~Group, main= "Scenario I")
+stripchart(c(SilverLand_HS,Orange_HS)~Group, add =TRUE, vertical =TRUE,
+           method= "jitter", col=2, pch=19)
+points(c(mean(Orange_HS),mean(SilverLand_HS) ), pch =18, col=1, cex=2)
+
+#Case II 
+SilverLand_HS <- rnorm(40, 76, 2)
+Orange_HS <- rnorm(35, 80, 1)
+Group <- c(rep("SL_HS",40), rep("Org_HS", 35))
+boxplot(c(SilverLand_HS,Orange_HS)~Group, main= "Scenario II")
+stripchart(c(SilverLand_HS,Orange_HS)~Group, add =TRUE, vertical =TRUE, 
+           method= "jitter", col=2, pch=19)
+points(c(mean(Orange_HS),mean(SilverLand_HS) ), pch =18, col=1, cex=2)
+
+#Case III 
+SilverLand_HS <- rnorm(40, 70, 3)
+Orange_HS <- rnorm(35, 90, 4)
+Group <- c(rep("SL_HS",40), rep("Org_HS", 35))
+boxplot(c(SilverLand_HS,Orange_HS)~Group, main= "Scenario III")
+stripchart(c(SilverLand_HS,Orange_HS)~Group, add =TRUE, vertical =TRUE, 
+           method= "jitter", col=2, pch=19)
+points(c(mean(Orange_HS),mean(SilverLand_HS) ), pch =18, col=1, cex=2)
+
+```
+In 3 scenarios above we are comparing performance score of two HS senior students. Since these two classes constitute the entire population of our interest we can make the comparison without any sampling. Eyeballing the box plots they are clearly different in scenario III but for the first two it is hard to tell and statistical testing is necessary to quantify the difference. 
+
+## Distribution of data
+To understand any data it is necessay to understand the underlying distribution of data. Distribution of data can be represented by a simple frequency table or barplot for discrete variable or histogram for continuous variable. For example for the HS data above a histogram represents its distribution: 
+```{r}
+par(mfrow=c(1,2))
+hist(SilverLand_HS)
+hist(Orange_HS)
+```
+
+y-axis represent the frequency and x-axis is the random variable that we are interested in. 
+
+
+   1. Binomial distribution
+   2. Poisson distribution
+   3. Normal distribution
+   4. z- distribution
+   5. t- distribution
+   6. Chi-squared distribution
+   7. Sampling distribution  
+    **a. Distribution of sample mean**  
+  Let us suppose we have a normally distributed population of size N, mean = $\mu$, variance = $\sigma^2$  and we randomly sample `n` observations then calculate mean ($\bar{Y}$)  for each such sample then **central limit theorem** states that means of samples ($\bar{Y}$) has approximately normal distribution with mean (mean of sample means) = population mean ($\mu$) and variance of  sample means is $\frac{\sigma^2}{n}$.
+  
+```{r}
+set.seed(230)
+par(mfrow=c(2,3))
+pop<- rnorm(1000, mean= 70, 10)
+hist(pop, breaks = 20, ylim=c(0,250), 
+     main=paste0("Histogram of Population \n Mean= ", 
+                 round(mean(pop),1), " Var =  ", round(var(pop),1)))
+##Sampling 
+for (i in 1:5) {
+ sample <- sample(pop, 100)
+hist(sample, breaks =20, ylim=c(0,250), 
+         main=paste0("Histogram of Sample", i," \n Mean= ",
+                     round(mean(sample),1)))   
+}
+
+```
+  Above figure shows, we sampled 5 times and calculated means from each sample. If we repeat this multiple times we get the distribution of sample mean which will be normally distributed with mean = $\mu$ and variance $\frac{\sigma^2}{n}$.
+```{r}
+par(mfrow=c(2,2))
+sample_size = c(25,50,75,100)
+for (size in 1:length(sample_size)) {
+    sample_means <- NULL
+    for (i in 1:1000) {
+    sample <- sample(pop, sample_size[size])
+    sample_means<-c (sample_means, mean(sample))
+}
+hist(sample_means, main=paste0('Dist of sample means n = ',
+                               sample_size[size],' \n mean = '
+                               ,round(mean(sample_means),1), 
+                               " variance = ", round(var(sample_means),1) ))
+}
+
+```
+  
+  In this case we know the population has mean of 70 and variance of 100. Irrespective of the sample size we see mean of sample means is also almost equal to 70. Variance of sample mean depends on sample size larger the size smaller smaller is the variance in sample means. This variance is also almost equal to $\frac{100}{n}$. From the histograms we see all 4 distribution of sample means are normally distributed. This variance of sample means is also called standard error (SE). This gives the measure of accuracy in the estimate of population mean ($\mu$).    
+  **b. Distribution of sample proportion**    
+    Binomial data is a categorical variable with only two levels. Binomial probability distribution is used to explain such data however, central limit theorem can also be used to approximate probabilities for the binomial distribution. Let us say, we are rolling a fair die and we call it success only if it rolls to 6. If we repeat it large number of times (For example 10000) we get the population of such distribution. Such experiment can be simulated in R using the underlying binomial distribution. 
+    
+```{r}
+set.seed=999
+Binom_pop <- rbinom(10000,1,1/6)
+table(Binom_pop)
+p = sum(Binom_pop)/10000 ##this is mean of population
+barplot(table(Binom_pop))
+```
+   
+   Theoretical probability of success (chance of getting 6) is `p` = 1/6 = 0.1667, and in this experimental population we get 0.1659, which is fairly close, so we can safely consider that probability of success in population is equal to theoretical probability of success. If we look at the distribution of this population it has only two levels. And when success event is represented by 1 and failure as 0, it can be shown that mean of such population is equal to `p` and variance is equal to `p(1-p)`.  
+   Now, to reproduce binomial experiment we sample `N` observations at a time. Instead of counting the number of success in trials of size `N` as we do in Binomial distribution, we can calculate proportion of success ($\frac{Number.of.success}{N}$). If we repeat this experiment large number of times and see the distribution of proportion of success in sample, it is normally distributed with mean equal to `p` and variance equal to `p(1-p)/N`.  
+   
+```{r}
+par(mfrow=c(2,2))
+sample_size = c(25,50,75,100)
+for (size in 1:length(sample_size)) {
+    sample_proportion <- NULL
+    for (i in 1:1000) {
+    sample <- sample(Binom_pop, sample_size[size])
+    sample_proportion<-c (sample_proportion, mean(sample))
+}
+hist(sample_proportion, main=paste0('Dist of sample proportion N = ',
+                               sample_size[size],' \n mean = '
+                               ,round(mean(sample_proportion),3), 
+                               " variance = ", round(var(sample_proportion),3) ))
+}
+
+```
+   It is important to note that the binomial population was not normal but the distribution of sample proportion is normal with mean = p and variance = `p(1-p)/N`. 
+   
+   **How does this method compare with Binomial probability ?**   
+            This method focuses on the proportion of success in each trial but binomial probability distribution focuses on number of success in each trail. Binomial probability distribution is defined by two parameters mean number of success which is equal to `np` and variance equal to `np(1-p)`. Following plot shows the binomial distribution and sampling distribution of proportion when getting 6 in a die is a success and trial has size = 100. 
+```{r}
+binom<- data.frame(Y=0:100, probability = NA)
+for (i in 1:nrow(binom)) {
+    binom[i,2] <- dbinom(binom[i,1], size = 100, 1/6)
+}
+barplot(binom$probability, names = binom$Y, ylab = "Probability",
+        xlab= "number of success",cex.axis =0.5, main = paste0("Binomial distribution \n Mean number of success = Np = 16.67 Variance = 0.1389"))
+##Now plot the sampling distribution of proportion
+sample_proportion <- NULL
+    for (i in 1:1000) {
+    sample <- sample(Binom_pop, 100)
+    sample_proportion<-c (sample_proportion, mean(sample))
+}
+hist(sample_proportion,xlim = c(0,1),cex=0.5,freq=FALSE, main=paste0('Dist of sample proportion N = 100 ',
+                             ' \n mean = '
+                               ,round(mean(sample_proportion),3), 
+                               " variance = ", round(var(sample_proportion),3) ))
+lines(density(sample_proportion), col="dodgerblue3", lwd=2)
+
+```
+      
+**What is the benefit of using this method (sampling distribution of proportion) to Binomial probability?**  
+When we do binomial distribution we need to know probability of success before hand. If we do not know the probability of success we are comparing the observed number of success to some ideal situation ex. both success and failure is equally likely, or it a fair dice. We do make prediction of true p from number of success in a trial.   
+When we have sampling distribution of proportion, the proportion observed in one particular sample (p) can be used to predict the mean proportion of sampling distribution of proportion with some confidence interval. 
+   8. Probability distribution 
+   9. Frequency distribution 
+   
+
+
+
+
+
+
